@@ -312,102 +312,12 @@ export const BacktestoSparkReveal = ({ f }: Props) => {
     );
   }
 
-  if (f < preBurn + BACKTESTO_BURN_FRAMES) {
-    const sf = f - preBurn;
-    const p = interpolate(sf, [0, BACKTESTO_BURN_FRAMES - 0.001], [0, 1], {
-      extrapolateRight: "clamp",
-      easing: Easing.inOut(Easing.cubic),
-    });
-
-    const slow = Easing.inOut(Easing.quad)(p);
-
-    const op2 = interpolate(slow, [0.08, 0.92], [0, 1], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-
-    const op1 = interpolate(slow, [0, 0.72, 1], [1, 0.45, 0], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-
-    const clipBottom = interpolate(slow, [0.12, 0.92], [0, 100], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-
-    const bright = interpolate(slow, [0, 0.55, 1], [1, 0.52, 0.28], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-    const sepia = interpolate(slow, [0.15, 0.85], [0, 0.85], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-    const contrast = interpolate(slow, [0, 0.5], [1, 1.35], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-
-    const emberH = interpolate(slow, [0.1, 0.88], [8, 72], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-    const emberA = interpolate(slow, [0.08, 0.45, 0.75, 1], [0, 0.55, 0.35, 0], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    });
-
-    return (
-      <AbsoluteFill style={{ zIndex: 60, backgroundColor: "transparent" }}>
-        <PerspCard f={f} boomStart={boomStart} boomEnd={boomEnd} preBurn={preBurn}>
-          <Img
-            src={staticFile("Backtesto2.jpg")}
-            style={{ ...imgFit, opacity: op2, position: "relative", zIndex: 0 }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 1,
-              clipPath: `inset(0 0 ${clipBottom}% 0)`,
-              pointerEvents: "none",
-            }}
-          >
-            <Img
-              src={staticFile("Backtesto1.jpg")}
-              style={{
-                ...imgFit,
-                opacity: op1,
-                filter: `brightness(${bright}) sepia(${sepia}) contrast(${contrast})`,
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: `${emberH}%`,
-                pointerEvents: "none",
-                background: `linear-gradient(to top, rgba(12,6,2,0.95) 0%, rgba(180,55,12,${emberA * 0.9}) 35%, rgba(255,140,40,${emberA * 0.5}) 55%, transparent 100%)`,
-                mixBlendMode: "multiply",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: `${emberH * 0.45}%`,
-                pointerEvents: "none",
-                background: `linear-gradient(to top, rgba(255,200,120,${emberA * 0.25}) 0%, transparent 100%)`,
-                mixBlendMode: "screen",
-              }}
-            />
-          </div>
-        </PerspCard>
+  return (
+    <AbsoluteFill style={{ zIndex: 60, backgroundColor: "transparent" }}>
+      <PerspCard f={f} boomStart={boomStart} boomEnd={boomEnd} preBurn={preBurn}>
+        <Img src={staticFile("Backtesto2.jpg")} style={imgFit} />
+      </PerspCard>
+      {f < preBurn + BACKTESTO_BURN_FRAMES ? (
         <CursorOverlay
           f={f}
           preBurn={preBurn}
@@ -415,15 +325,7 @@ export const BacktestoSparkReveal = ({ f }: Props) => {
           cursorTravel={cursorTravel}
           atTarget={atTarget}
         />
-      </AbsoluteFill>
-    );
-  }
-
-  return (
-    <AbsoluteFill style={{ zIndex: 60, backgroundColor: "transparent" }}>
-      <PerspCard f={f} boomStart={boomStart} boomEnd={boomEnd} preBurn={preBurn}>
-        <Img src={staticFile("Backtesto2.jpg")} style={imgFit} />
-      </PerspCard>
+      ) : null}
     </AbsoluteFill>
   );
 };
