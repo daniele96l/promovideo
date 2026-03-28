@@ -6,6 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { BacktestoSparkReveal } from "./BacktestoSparkReveal";
 import { getHeroStartFrame, getWaveLength } from "./timeline";
 
 type Dir = "left" | "right" | "up" | "down";
@@ -178,6 +179,9 @@ function getBeatStart(i: number): number {
 }
 
 const OFFSET_BIG_TWO = getBeatStart(WORD_BEATS.length - 1) + getBeatLen();
+
+const DRAMATIC_TWO_FRAMES = 18 + 28 + 14;
+const OFFSET_BACKTESTO_IMAGES = OFFSET_BIG_TWO + DRAMATIC_TWO_FRAMES;
 
 const enterOffset = (dir: Dir, w: number, h: number) => {
   const xw = w * 0.55;
@@ -412,9 +416,9 @@ const WordBeat = ({
 };
 
 const DramaticTwo = ({ f, w, h }: { f: number; w: number; h: number }) => {
-  const enterLen = 22;
-  const holdLen = 88;
-  const exitLen = 18;
+  const enterLen = 18;
+  const holdLen = 28;
+  const exitLen = 14;
   const total = enterLen + holdLen + exitLen;
   if (f < 0 || f >= total) {
     return null;
@@ -582,6 +586,7 @@ export const GoldHeroMessages = () => {
       <AbsoluteFill style={{ zIndex: 1 }}>
         {lineNodes}
         <DramaticTwo f={f - OFFSET_BIG_TWO} w={width} h={height} />
+        <BacktestoSparkReveal f={f - OFFSET_BACKTESTO_IMAGES} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
