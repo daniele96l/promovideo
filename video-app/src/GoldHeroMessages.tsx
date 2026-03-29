@@ -7,7 +7,6 @@ import {
   useVideoConfig,
 } from "remotion";
 import { BacktestoSparkReveal } from "./BacktestoSparkReveal";
-import { getHeroStartFrame, getWaveLength } from "./timeline";
 
 type Dir = "left" | "right" | "up" | "down";
 
@@ -540,16 +539,9 @@ const DramaticTwo = ({ f, w, h }: { f: number; w: number; h: number }) => {
 };
 
 export const GoldHeroMessages = () => {
-  const globalFrame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
-  const waveLen = getWaveLength(fps);
-  const t = globalFrame % waveLen;
-  const heroStart = getHeroStartFrame(fps);
-  const f = t - heroStart;
-
-  if (f < 0) {
-    return null;
-  }
+  /** Hero-local frames: `useCurrentFrame()` is relative to the Hero `<Sequence>` start (Remotion). */
+  const f = useCurrentFrame();
+  const { width, height } = useVideoConfig();
 
   const dim = interpolate(f, [0, 10], [0, 0.45], {
     extrapolateRight: "clamp",

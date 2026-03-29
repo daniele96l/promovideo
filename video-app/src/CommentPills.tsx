@@ -1,32 +1,22 @@
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { getWaveLength, T_FALL, T_UP } from "./timeline";
+import { T_FALL, T_UP } from "./timeline";
 
-/** Rest positions (spread across upper/mid frame, semi-chaotic) — index matches comment order. */
+/** Rest positions (spread across upper/mid frame) — index matches comment order. */
 const CHAOTIC_TARGETS: ReadonlyArray<{ leftPct: number; topNorm: number }> = [
-  { leftPct: 11, topNorm: 0.07 },
-  { leftPct: 86, topNorm: 0.086 },
-  { leftPct: 44, topNorm: 0.096 },
-  { leftPct: 91, topNorm: 0.068 },
-  { leftPct: 19, topNorm: 0.118 },
-  { leftPct: 66, topNorm: 0.104 },
-  { leftPct: 7, topNorm: 0.099 },
-  { leftPct: 74, topNorm: 0.128 },
-  { leftPct: 34, topNorm: 0.142 },
-  { leftPct: 89, topNorm: 0.154 },
-  { leftPct: 15, topNorm: 0.164 },
-  { leftPct: 57, topNorm: 0.176 },
-  { leftPct: 83, topNorm: 0.192 },
-  { leftPct: 27, topNorm: 0.202 },
-  { leftPct: 49, topNorm: 0.186 },
-  { leftPct: 93, topNorm: 0.208 },
-  { leftPct: 13, topNorm: 0.23 },
-  { leftPct: 69, topNorm: 0.222 },
-  { leftPct: 37, topNorm: 0.248 },
-  { leftPct: 84, topNorm: 0.24 },
-  { leftPct: 23, topNorm: 0.27 },
-  { leftPct: 61, topNorm: 0.262 },
-  { leftPct: 51, topNorm: 0.288 },
-  { leftPct: 39, topNorm: 0.302 },
+  { leftPct: 14, topNorm: 0.07 },
+  { leftPct: 88, topNorm: 0.09 },
+  { leftPct: 48, topNorm: 0.12 },
+  { leftPct: 10, topNorm: 0.15 },
+  { leftPct: 82, topNorm: 0.18 },
+  { leftPct: 42, topNorm: 0.21 },
+  { leftPct: 72, topNorm: 0.1 },
+  { leftPct: 24, topNorm: 0.24 },
+  { leftPct: 92, topNorm: 0.2 },
+  { leftPct: 18, topNorm: 0.27 },
+  { leftPct: 58, topNorm: 0.14 },
+  { leftPct: 36, topNorm: 0.29 },
+  { leftPct: 66, topNorm: 0.25 },
+  { leftPct: 50, topNorm: 0.31 },
 ];
 
 export const ITALIAN_FEATURE_COMMENTS: Array<{
@@ -37,172 +27,102 @@ export const ITALIAN_FEATURE_COMMENTS: Array<{
   leftPct: number;
 }> = [
   {
-    author: "Marco Bianchi",
-    icon: "📊",
-    text: "Come trovo l'allocazione per valuta del mio portafoglio?",
+    author: "Community",
+    icon: "🌙",
+    text: "Vogliamo la dark mode",
     from: 0,
-    leftPct: 12,
-  },
-  {
-    author: "Giulia Ferretti",
-    icon: "📑",
-    text: "Mi aggiungete l'export degli estratti conto in Excel?",
-    from: 5,
-    leftPct: 78,
-  },
-  {
-    author: "Alessandro Conti",
-    icon: "💳",
-    text: "Dove vedo le commissioni dettagliate su ogni ordine?",
-    from: 10,
-    leftPct: 44,
-  },
-  {
-    author: "Francesca Romano",
-    icon: "🔔",
-    text: "Alert quando un titolo supera una soglia di prezzo?",
-    from: 15,
-    leftPct: 88,
-  },
-  {
-    author: "Luca Moretti",
-    icon: "🏦",
-    text: "Posso collegare più conti per il consolidamento?",
-    from: 20,
-    leftPct: 22,
-  },
-  {
-    author: "Elena Martini",
-    icon: "📈",
-    text: "Mostrate il TWR e il MWR del portafoglio?",
-    from: 25,
-    leftPct: 62,
-  },
-  {
-    author: "Davide Ricci",
-    icon: "🛡️",
-    text: "Come imposto le notifiche sulle operazioni sospette?",
-    from: 30,
-    leftPct: 8,
-  },
-  {
-    author: "Chiara Gallo",
-    icon: "🔎",
-    text: "Aggiungete filtri per settore e capitalizzazione?",
-    from: 35,
-    leftPct: 70,
-  },
-  {
-    author: "Matteo Fontana",
-    icon: "🧾",
-    text: "Dove trovo la minusvalenza compensateibile?",
-    from: 40,
-    leftPct: 36,
-  },
-  {
-    author: "Sara Lombardi",
-    icon: "📉",
-    text: "Confrontate il mio portafoglio con un benchmark personalizzato?",
-    from: 45,
-    leftPct: 92,
-  },
-  {
-    author: "Andrea Costa",
-    icon: "👔",
-    text: "Esportazione automatica per il commercialista?",
-    from: 50,
     leftPct: 18,
   },
   {
-    author: "Valentina Marino",
-    icon: "💹",
-    text: "Vista grafico storico delle commissioni annue?",
-    from: 55,
-    leftPct: 54,
+    author: "Dani",
+    icon: "⚖️",
+    text: "Aggiungi il ribilanciamento del portafoglio",
+    from: 11,
+    leftPct: 72,
   },
   {
-    author: "Simone Greco",
-    icon: "🏛️",
-    text: "Come classifico le plusvalenze per la dichiarazione dei redditi?",
-    from: 60,
-    leftPct: 82,
-  },
-  {
-    author: "Martina Bruno",
-    icon: "💶",
-    text: "Il prelievo fiscale è già calcolato in piattaforma?",
-    from: 65,
+    author: "Marco",
+    icon: "🧾",
+    text: "Aggiungi le tasse",
+    from: 22,
     leftPct: 28,
   },
   {
-    author: "Federico Serra",
-    icon: "🪙",
-    text: "Quando aprite i fondi pensione aperti (FPA)?",
-    from: 70,
-    leftPct: 66,
-  },
-  {
-    author: "Ilaria Pellegrini",
+    author: "Giulia",
     icon: "📱",
-    text: "Notifiche push sull'IBAN collegato e sugli incassi?",
-    from: 75,
-    leftPct: 14,
+    text: "Migliora l'uso da smartphone",
+    from: 33,
+    leftPct: 84,
   },
   {
-    author: "Paolo Vitale",
-    icon: "📋",
-    text: "Drag & drop per riordinare le watchlist?",
-    from: 80,
-    leftPct: 74,
+    author: "Luca",
+    icon: "📊",
+    text: "Mancano asset",
+    from: 44,
+    leftPct: 12,
   },
   {
-    author: "Silvia Caruso",
-    icon: "🌙",
-    text: "Dark mode anche nei PDF degli estratti?",
-    from: 85,
-    leftPct: 40,
-  },
-  {
-    author: "Riccardo De Luca",
-    icon: "🧮",
-    text: "Simulatore d'impatto fiscale sulle vendite parziali?",
-    from: 90,
-    leftPct: 6,
-  },
-  {
-    author: "Giada Ferrara",
-    icon: "👨‍👩‍👧",
-    text: "Aggregazione del patrimonio familiare in un'unica dashboard?",
-    from: 95,
+    author: "Sara",
+    icon: "💬",
+    text: "Più chiarezza su commissioni e costi",
+    from: 55,
     leftPct: 58,
   },
   {
-    author: "Tommaso Bianco",
-    icon: "🧾",
-    text: "Integrazione con FatturaPA per le spese aziendali?",
-    from: 100,
-    leftPct: 86,
+    author: "Fede",
+    icon: "📄",
+    text: "L'export PDF deve essere molto più chiaro e completo",
+    from: 66,
+    leftPct: 76,
   },
   {
-    author: "Camilla Rizzo",
-    icon: "🌍",
-    text: "Mostrate lo split per asset class e per geografia?",
-    from: 105,
-    leftPct: 32,
+    author: "Alex",
+    icon: "🤖",
+    text: "Migliora Alpha AI: risposte e insight più utili",
+    from: 77,
+    leftPct: 22,
   },
   {
-    author: "Lorenzo Marchetti",
-    icon: "🎯",
-    text: "Posso fissare un obiettivo di risparmio con promemoria?",
+    author: "Chiara",
+    icon: "📈",
+    text: "Estendi i dati: più storico, più metriche, più dettaglio",
+    from: 88,
+    leftPct: 64,
+  },
+  {
+    author: "Tommaso",
+    icon: "⚡",
+    text: "Quando la leva sul portafoglio?",
+    from: 99,
+    leftPct: 40,
+  },
+  {
+    author: "Elena",
+    icon: "🔥",
+    text: "Simulazione FIRE: ritiro anticipato e scenari realistici",
     from: 110,
-    leftPct: 50,
+    leftPct: 88,
   },
   {
-    author: "Alessandra Colombo",
-    icon: "💰",
-    text: "Storico delle tasse trattenute su dividendi e cedole?",
-    from: 115,
-    leftPct: 24,
+    author: "Valentina",
+    icon: "🎨",
+    text: "Migliora la UI: meno attrito, più chiarezza",
+    from: 121,
+    leftPct: 16,
+  },
+  {
+    author: "Simone",
+    icon: "🔔",
+    text: "Alert e notifiche davvero personalizzabili",
+    from: 132,
+    leftPct: 52,
+  },
+  {
+    author: "Andrea",
+    icon: "🔗",
+    text: "Più integrazioni: broker, banche, fogli Excel",
+    from: 143,
+    leftPct: 70,
   },
 ];
 
@@ -232,6 +152,10 @@ const ThrownPill = ({
   width: number;
   fps: number;
 }) => {
+  /** Fixed width so shrink-to-fit does not narrow the pill when `left` nears the edges. */
+  const pillW = Math.min(560, width * 0.62);
+  const edgeMargin = 12;
+
   const startY = height + 140;
   const endFallY = height + 220;
   const slot = CHAOTIC_TARGETS[index] ?? CHAOTIC_TARGETS[0];
@@ -283,6 +207,18 @@ const ThrownPill = ({
     opacity = 1;
   }
 
+  // Keep center-x inside frame so the pill never “squishes” from shrink-to-fit at edges.
+  const half = pillW / 2;
+  let centerPx = (xPct / 100) * width;
+  const minCx = half + edgeMargin;
+  const maxCx = width - half - edgeMargin;
+  if (centerPx < minCx) {
+    centerPx = minCx;
+  } else if (centerPx > maxCx) {
+    centerPx = maxCx;
+  }
+  xPct = (centerPx / width) * 100;
+
   return (
     <div
       style={{
@@ -291,9 +227,13 @@ const ThrownPill = ({
         top: y,
         transform: `translate(-50%, 0) rotate(${rotate}deg)`,
         opacity,
-        maxWidth: Math.min(400, width * 0.42),
-        padding: "10px 14px 10px 10px",
-        borderRadius: 18,
+        width: pillW,
+        minWidth: pillW,
+        maxWidth: pillW,
+        boxSizing: "border-box",
+        flexShrink: 0,
+        padding: "16px 20px 16px 16px",
+        borderRadius: 24,
         fontFamily: "system-ui, -apple-system, sans-serif",
         color: "rgba(226, 242, 255, 0.95)",
         background:
@@ -307,20 +247,21 @@ const ThrownPill = ({
         display: "flex",
         flexDirection: "row",
         alignItems: "flex-start",
-        gap: 10,
+        gap: 14,
       }}
     >
       <div
         style={{
-          width: 40,
-          height: 40,
-          minWidth: 40,
+          width: 54,
+          height: 54,
+          minWidth: 54,
+          flexShrink: 0,
           borderRadius: "50%",
           overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 20,
+          fontSize: 26,
           lineHeight: 1,
           background:
             "linear-gradient(145deg, rgba(56, 189, 248, 0.35) 0%, rgba(37, 99, 235, 0.45) 100%)",
@@ -331,23 +272,29 @@ const ThrownPill = ({
       >
         {icon}
       </div>
-      <div style={{ minWidth: 0, flex: 1 }}>
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          overflow: "hidden",
+        }}
+      >
         <div
           style={{
-            fontSize: 13,
-            fontWeight: 600,
+            fontSize: 16,
+            fontWeight: 700,
             letterSpacing: "0.01em",
             color: "rgba(186, 230, 253, 0.95)",
-            marginBottom: 4,
+            marginBottom: 6,
           }}
         >
           {author}
         </div>
         <div
           style={{
-            fontSize: 14,
-            fontWeight: 500,
-            lineHeight: 1.38,
+            fontSize: 18,
+            fontWeight: 600,
+            lineHeight: 1.35,
             color: "rgba(226, 242, 255, 0.94)",
           }}
         >
@@ -359,10 +306,8 @@ const ThrownPill = ({
 };
 
 export const CommentPillsLayer = () => {
-  const globalFrame = useCurrentFrame();
+  const frame = useCurrentFrame();
   const { height, width, fps } = useVideoConfig();
-  const waveLength = getWaveLength(fps);
-  const frame = globalFrame % waveLength;
 
   return (
     <AbsoluteFill style={{ pointerEvents: "none", zIndex: 15 }}>
