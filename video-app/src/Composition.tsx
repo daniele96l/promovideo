@@ -7,12 +7,15 @@ import {
 } from "remotion";
 import { CommentPillsLayer } from "./CommentPills";
 import { GoldHeroMessages } from "./GoldHeroMessages";
+import { TutorialFloatingScreen } from "./TutorialFloatingScreen";
 import {
   getBacktestoDustFxTrack,
   getCommentsLayerDurationFrames,
   getCompositionDurationFrames,
   getHeroSequenceFrames,
   getHeroStartFrame,
+  getTutorialDurationFrames,
+  getTutorialStartFrame,
 } from "./scene-tracks";
 
 /** Invisible row so Studio shows FX timing (edit `scene-tracks.ts` to move). */
@@ -26,6 +29,8 @@ export const MyComposition = () => {
   const heroDuration = getHeroSequenceFrames(fps);
   const commentDuration = getCommentsLayerDurationFrames(fps);
   const dust = getBacktestoDustFxTrack(fps);
+  const tutorialFrom = getTutorialStartFrame(fps);
+  const tutorialDuration = getTutorialDurationFrames(fps);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#030711", overflow: "hidden" }}>
@@ -76,6 +81,15 @@ export const MyComposition = () => {
         name="FX · Backtesto dust / sparkle (behind card)"
       >
         <TimelineMarker />
+      </Sequence>
+
+      <Sequence
+        from={tutorialFrom}
+        durationInFrames={tutorialDuration}
+        name="Tutorial · floating screen"
+      >
+        <TutorialFloatingScreen />
+        <Audio src={staticFile("tutorial.mov")} />
       </Sequence>
 
       <Sequence durationInFrames={durationInFrames} name="Audio">

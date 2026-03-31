@@ -18,9 +18,12 @@ import {
   getCompositionDurationFrames,
   getHeroSequenceFrames,
   getHeroStartFrame,
+  getTutorialDurationFrames,
+  getTutorialStartFrame,
   HERO_LOCAL_OFFSET_BACKTESTO,
   HERO_START_SEC,
   secToFrames,
+  TUTORIAL_SOURCE_DURATION_SEC,
 } from "./scene-tracks";
 
 export {
@@ -30,8 +33,11 @@ export {
   getCompositionDurationFrames,
   getHeroSequenceFrames,
   getHeroStartFrame,
+  getTutorialDurationFrames,
+  getTutorialStartFrame,
   HERO_START_SEC,
   secToFrames,
+  TUTORIAL_SOURCE_DURATION_SEC,
 };
 
 export const BACKTESTO_CURSOR_CLICK_AT_SEC = BACKTESTO_CLICK_SEC;

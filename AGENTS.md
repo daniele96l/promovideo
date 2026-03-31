@@ -31,7 +31,7 @@ This repository uses **`AGENTS.md`** (Cursor / agent convention). Instructions f
 
 ### Must stay aligned
 
-- **`HERO_LOCAL_OFFSET_BACKTESTO` (420)** and **`HERO_WORDS_UNTIL_BACKTESTO_FRAMES` (420)** must match **`OFFSET_BACKTESTO_IMAGES`** (= **`OFFSET_BIG_TWO + DRAMATIC_TWO_FRAMES`**) in **`GoldHeroMessages.tsx`**.
+- **`HERO_LOCAL_OFFSET_BACKTESTO`** and **`HERO_WORDS_UNTIL_BACKTESTO_FRAMES`** must match **`OFFSET_BACKTESTO_IMAGES`** (= **`OFFSET_BIG_TWO + DRAMATIC_TWO_FRAMES`**) in **`GoldHeroMessages.tsx`** (short intro + fast dramatic “2”; keep `DRAMATIC_TWO_*_F` in sync with `scene-tracks`).
 - **`LAST_COMMENT_FROM`** in **`timeline.ts`** must match the last pill’s **`from`** in **`ITALIAN_FEATURE_COMMENTS`** (`CommentPills.tsx`).
 
 ## `BacktestoSparkReveal.tsx`

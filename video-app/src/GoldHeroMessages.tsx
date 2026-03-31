@@ -61,44 +61,45 @@ const WORD_BEATS: ReadonlyArray<{
   handoffFrames?: number;
 }> = [
   {
-    text: "Abbiamo letto",
+    text: "Grazie",
     enter: "left",
     exit: "up",
     handoffStyle: "alongAxis",
     enterEase: "quint",
     exitEase: "cubic",
-    handoffFrames: 11,
+    handoffFrames: 10,
   },
   {
-    text: "i vostri",
+    text: "a",
     enter: "down",
     exit: "left",
+    sizeMul: 0.88,
     handoffStyle: "squeeze",
     enterEase: "cubic",
     exitEase: "quint",
-    handoffFrames: 9,
+    handoffFrames: 8,
   },
   {
-    text: "feedback",
+    text: "tutti",
     enter: "right",
     exit: "left",
-    sizeMul: 0.72,
     handoffStyle: "alongAxis",
     enterEase: "cubic",
     exitEase: "cubic",
-    handoffFrames: 12,
+    handoffFrames: 9,
   },
   {
-    text: "E li",
+    text: "i",
     enter: "right",
     exit: "down",
+    sizeMul: 0.82,
     handoffStyle: "orthogonalKick",
     enterEase: "back",
     exitEase: "quint",
     handoffFrames: 8,
   },
   {
-    text: "abbiamo implementati",
+    text: "vostri",
     enter: "up",
     exit: "right",
     handoffStyle: "alongAxis",
@@ -107,55 +108,49 @@ const WORD_BEATS: ReadonlyArray<{
     handoffFrames: 10,
   },
   {
-    text: "Dopo un",
+    text: "feedback,",
     enter: "left",
     exit: "up",
+    sizeMul: 0.86,
     handoffStyle: "squeeze",
     enterEase: "cubic",
     exitEase: "cubic",
     handoffFrames: 11,
   },
   {
-    text: "anno",
+    text: "vi",
     enter: "down",
     exit: "left",
+    sizeMul: 0.88,
     handoffStyle: "orthogonalKick",
     enterEase: "quint",
     exitEase: "quint",
     handoffFrames: 9,
   },
   {
-    text: "Vi",
+    text: "presentiamo",
     enter: "right",
     exit: "down",
+    sizeMul: 0.84,
     handoffStyle: "alongAxis",
     enterEase: "back",
     exitEase: "cubic",
     handoffFrames: 10,
   },
   {
-    text: "presentiamo",
+    text: "Backtesto",
     enter: "up",
-    exit: "left",
+    exit: "right",
     handoffStyle: "squeeze",
     enterEase: "quint",
-    exitEase: "quint",
-    handoffFrames: 12,
-  },
-  {
-    text: "Backtesto",
-    enter: "right",
-    exit: "right",
-    handoffStyle: "alongAxis",
-    enterEase: "cubic",
     exitEase: "quint",
     handoffFrames: 10,
   },
 ];
 
-const ENTER_F = 13;
-const HOLD_F = 16;
-const EXIT_F = 13;
+const ENTER_F = 9;
+const HOLD_F = 8;
+const EXIT_F = 9;
 const DEFAULT_HANDOFF = 10;
 
 /** Frame di handoff dopo la battuta i (uscita di i ↔ entrata di i+1). */
@@ -179,7 +174,12 @@ function getBeatStart(i: number): number {
 
 const OFFSET_BIG_TWO = getBeatStart(WORD_BEATS.length - 1) + getBeatLen();
 
-const DRAMATIC_TWO_FRAMES = 18 + 28 + 14;
+/** Dramatic “2”: keep in sync with `DramaticTwo` enter/hold/exit below. */
+const DRAMATIC_TWO_ENTER_F = 9;
+const DRAMATIC_TWO_HOLD_F = 14;
+const DRAMATIC_TWO_EXIT_F = 8;
+const DRAMATIC_TWO_FRAMES =
+  DRAMATIC_TWO_ENTER_F + DRAMATIC_TWO_HOLD_F + DRAMATIC_TWO_EXIT_F;
 const OFFSET_BACKTESTO_IMAGES = OFFSET_BIG_TWO + DRAMATIC_TWO_FRAMES;
 
 const enterOffset = (dir: Dir, w: number, h: number) => {
@@ -415,9 +415,9 @@ const WordBeat = ({
 };
 
 const DramaticTwo = ({ f, w, h }: { f: number; w: number; h: number }) => {
-  const enterLen = 18;
-  const holdLen = 28;
-  const exitLen = 14;
+  const enterLen = DRAMATIC_TWO_ENTER_F;
+  const holdLen = DRAMATIC_TWO_HOLD_F;
+  const exitLen = DRAMATIC_TWO_EXIT_F;
   const total = enterLen + holdLen + exitLen;
   if (f < 0 || f >= total) {
     return null;
@@ -429,17 +429,17 @@ const DramaticTwo = ({ f, w, h }: { f: number; w: number; h: number }) => {
     const t = interpolate(f, [0, enterLen - 0.001], [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
-      easing: Easing.out(Easing.cubic),
+      easing: Easing.out(quint),
     });
-    const scale = interpolate(t, [0, 1], [0.08, 1.05]);
-    const rot = interpolate(t, [0, 1], [-14, 0]);
-    const opacity = interpolate(f, [0, 4], [0, 1], {
+    const scale = interpolate(t, [0, 1], [0.06, 1.06]);
+    const rot = interpolate(t, [0, 1], [-18, 0]);
+    const opacity = interpolate(f, [0, Math.min(3, enterLen - 1)], [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     });
-    const blur = interpolate(t, [0, 0.5], [12, 0], {
+    const blur = interpolate(t, [0, 0.42], [14, 0], {
       extrapolateRight: "clamp",
-      easing: Easing.out(Easing.quad),
+      easing: Easing.out(quint),
     });
 
     return (

@@ -398,7 +398,7 @@ export const BacktestoSparkReveal = ({ f }: Props) => {
     <AbsoluteFill style={{ zIndex: 60, backgroundColor: "transparent" }}>
       <BacktestoRevealVfx f={f} preBurn={preBurn} />
       <PerspCard f={f} preBurn={preBurn}>
-        <Img src={staticFile("Backtesto2.jpg")} style={imgFit} />
+        <Img src={staticFile("Backtesto1.jpg")} style={imgFit} />
       </PerspCard>
       {f < preBurn + BACKTESTO_BURN_FRAMES ? (
         <CursorOverlay
