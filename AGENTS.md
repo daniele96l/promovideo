@@ -5,6 +5,7 @@ This repository uses **`AGENTS.md`** (Cursor / agent convention). Instructions f
 ## Project layout
 
 - **`video-app/`** — Remotion 4 project (React 19). Main code: `video-app/src/`.
+- **`video-app-langease/`** — second Remotion project: promo LangEase / Backtesto 2 (`id`: `LangEasePromo`), audio `public/langease.mp3`, hero in `LangEaseHero.tsx`, end card in `EndcardBacktesto.tsx`.
 - **Composition** is registered in `video-app/src/Root.tsx` (`id`: `MyComp`, default **30 fps**).
 - **Assets** served via `staticFile()` live under `video-app/public/` (e.g. `audio.mp3`, `Backtesto1.jpg`, `Backtesto2.jpg`).
 
