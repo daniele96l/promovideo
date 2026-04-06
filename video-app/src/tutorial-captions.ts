@@ -13,18 +13,18 @@ export type TutorialCaption = {
 const BEAT_SEC = 1.48;
 
 const UI_BEATS: string[] = [
-  "Dark mode",
-  "Alpha AI migliorata",
-  "Database in espansione",
-  "Performance",
-  "Allocazione geografica",
-  "Simulazione Monte Carlo",
-  "Allocazione",
-  "Dani Score",
-  "Traccia il tuo portafoglio in live",
-  "Simula il tuo FIRE",
-  "Guida gratuita e blog post",
-  "Forum di discussione",
+  "Backtesta il tuo portafoglio",
+  "Chatta con Alpha AI migliorata",
+  "Database con 10k assets",
+  "Performance migliorata",
+  "Controlal la tua <b>Allocazione geografica</b>",
+  "Fai una <b>Simulazione Monte Carlo</b>",
+  "Controlla la tua <b>Allocazione</b>",
+  "Guarda il tuo <b>Dani Score</b>",
+  "Traccia il tuo portafoglio in <b>live</b>",
+  "Simula il tuo <b>FIRE</b>",
+  "Leggi la <b>Guida gratuita</b> e il <b>blog post</b>",
+  "Discuti nel <b>Forum di discussione</b>",
 ];
 
 function buildCaptions(): TutorialCaption[] {

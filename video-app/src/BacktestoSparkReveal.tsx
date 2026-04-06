@@ -30,6 +30,26 @@ function postSwapEvolveScale(f: number, preBurn: number): number {
   );
 }
 
+/** Punch-in right after Backtesto2 appears (frames since swap, ≥ 0). */
+function swapJumpNudge(swapLocal: number): { scaleMul: number; ty: number } {
+  const scaleMul = interpolate(
+    swapLocal,
+    [0, 3, 7, 16],
+    [1.1, 1.05, 1.015, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+      easing: Easing.out(Easing.poly(4)),
+    },
+  );
+  const ty = interpolate(swapLocal, [0, 4, 12], [-22, -6, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  return { scaleMul, ty };
+}
+
 const imgFit: CSSProperties = {
   display: "block",
   width: "100%",
@@ -44,10 +64,85 @@ const CURSOR_TO = { x: 50, y: 45 };
 /** Dense field across the card / image area (behind the photo). */
 const DUST_PARTICLE_COUNT = 320;
 
+/** Full-screen burst behind the card when Backtesto2 lands. */
+const EXPLOSION_PARTICLE_COUNT = 180;
+
 /** Deterministic 0–1 for stable Remotion renders. */
 function dustRand(seed: number): number {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return x - Math.floor(x);
+}
+
+function SwapExplosionBackground({
+  f,
+  preBurn,
+}: {
+  f: number;
+  preBurn: number;
+}) {
+  const local = f - preBurn;
+  if (local < 0) {
+    return null;
+  }
+
+  return (
+    <AbsoluteFill style={{ zIndex: 0, pointerEvents: "none" }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: "-8%",
+          opacity: interpolate(local, [0, 2, 14, 38], [0.55, 0.42, 0.15, 0], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          }),
+          background:
+            "radial-gradient(circle at 50% 42%, rgba(255,220,160,0.35) 0%, rgba(59,130,246,0.12) 35%, transparent 62%)",
+          filter: "blur(28px)",
+        }}
+      />
+      {Array.from({ length: EXPLOSION_PARTICLE_COUNT }, (_, i) => {
+        const angle = dustRand(i * 8.41) * Math.PI * 2;
+        const radialEase = Easing.out(Easing.cubic)(
+          interpolate(local, [0, 1, 36], [0, 1, 1], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          }),
+        );
+        const dist = radialEase * (28 + dustRand(i * 6.2) * 58);
+        const cx = 50 + Math.cos(angle) * dist * 0.42;
+        const cy = 42 + Math.sin(angle) * dist * 0.38;
+        const lift = local * (0.35 + dustRand(i * 4.7) * 1.1);
+        const op = interpolate(local, [0, 1, 8, 22, 48], [0, 0.95, 0.7, 0.35, 0], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        });
+        const hue = dustRand(i * 2.11) > 0.45;
+        const bg = hue
+          ? `linear-gradient(135deg, rgba(186,230,253,${op * 0.95}), rgba(59,130,246,${op * 0.55}))`
+          : `linear-gradient(135deg, rgba(255,248,220,${op * 0.95}), rgba(251,191,36,${op * 0.45}))`;
+        const sz = 1.2 + dustRand(i * 5.55) * 5.5;
+        const rot = local * (2.4 + dustRand(i * 3.9) * 10);
+        return (
+          <div
+            key={`ex-${i}`}
+            style={{
+              position: "absolute",
+              left: `${cx}%`,
+              top: `${cy - lift * 0.02}%`,
+              width: sz,
+              height: sz * (0.35 + dustRand(i * 6.1) * 0.5),
+              borderRadius: sz < 2.2 ? 999 : 2,
+              background: bg,
+              boxShadow: `0 0 ${sz * 3}px rgba(255,255,255,${op * 0.25})`,
+              transform: `translate(-50%, -50%) rotate(${rot}deg)`,
+              opacity: op,
+              filter: `blur(${dustRand(i * 9.2) * 0.45}px)`,
+            }}
+          />
+        );
+      })}
+    </AbsoluteFill>
+  );
 }
 
 function BacktestoRevealVfx({
@@ -314,17 +409,23 @@ function PerspCard({
   f,
   preBurn,
   extraScale = 1,
+  swapLocal,
   children,
 }: {
   f: number;
   preBurn: number;
   extraScale?: number;
+  /** If set (post-swap), adds punch scale + vertical pop on Backtesto2. */
+  swapLocal?: number;
   children: ReactNode;
 }) {
   const swayY = Math.sin(f * 0.06) * 3.5;
   const swayRot = Math.sin(f * 0.045) * 0.75;
   const evolve = postSwapEvolveScale(f, preBurn);
-  const scale = extraScale * evolve;
+  const jump =
+    swapLocal !== undefined && swapLocal >= 0 ? swapJumpNudge(swapLocal) : { scaleMul: 1, ty: 0 };
+  const scale = extraScale * evolve * jump.scaleMul;
+  const ty = swayY + jump.ty;
   return (
     <div
       style={{
@@ -340,7 +441,7 @@ function PerspCard({
     >
       <div
         style={{
-          transform: `rotateY(-7deg) rotateX(3deg) rotateZ(${swayRot}deg) translateY(${swayY}px) scale(${scale})`,
+          transform: `rotateY(-7deg) rotateX(3deg) rotateZ(${swayRot}deg) translateY(${ty}px) scale(${scale})`,
           transformStyle: "preserve-3d",
           width: "min(74%, 920px)",
           maxHeight: "82%",
@@ -396,8 +497,9 @@ export const BacktestoSparkReveal = ({ f }: Props) => {
 
   return (
     <AbsoluteFill style={{ zIndex: 60, backgroundColor: "transparent" }}>
+      <SwapExplosionBackground f={f} preBurn={preBurn} />
       <BacktestoRevealVfx f={f} preBurn={preBurn} />
-      <PerspCard f={f} preBurn={preBurn}>
+      <PerspCard f={f} preBurn={preBurn} swapLocal={f - preBurn}>
         <Img src={staticFile("Backtesto2.jpg")} style={imgFit} />
       </PerspCard>
       {f < preBurn + BACKTESTO_BURN_FRAMES ? (
