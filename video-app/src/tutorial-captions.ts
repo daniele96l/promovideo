@@ -14,17 +14,17 @@ const BEAT_SEC = 1.48;
 
 const UI_BEATS: string[] = [
   "Dark mode",
-  "Alpha Ai migliorata",
-  "Database espando",
+  "Alpha AI migliorata",
+  "Database in espansione",
   "Performance",
   "Allocazione geografica",
-  "Simuyalzione montecarlo",
+  "Simulazione Monte Carlo",
   "Allocazione",
   "Dani Score",
-  "Traccia il tuo protafogio il live",
-  "simula il tuo fire",
+  "Traccia il tuo portafoglio in live",
+  "Simula il tuo FIRE",
   "Guida gratuita e blog post",
-  "forum di discussione",
+  "Forum di discussione",
 ];
 
 function buildCaptions(): TutorialCaption[] {

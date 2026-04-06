@@ -1,4 +1,4 @@
-# Agent guide — promotioanlvideo (Remotion)
+# Agent guide — promotional video (Remotion)
 
 This repository uses **`AGENTS.md`** (Cursor / agent convention). Instructions for AI assistants and contributors:
 
@@ -14,7 +14,7 @@ This repository uses **`AGENTS.md`** (Cursor / agent convention). Instructions f
 **`video-app/src/scene-tracks.ts`** is the **canonical schedule** for the promo (composition time from **t = 0** in seconds, plus frame helpers for any `fps`).
 
 - Edit **`HERO_START_SEC`**, **`COMMENTS_LAYER_END_SEC`**, **`BACKTESTO_CLICK_SEC`**, frame counts (`BACKTESTO_BURN_FRAMES`, holds, **`TAIL_GAP_FRAMES`**, etc.) **here first**.
-- Then update **`Composition.tsx`** `<Sequence from={…} durationInFrames={…} name="…">` so it still matches (use the exported helpers: `getHeroStartFrame`, `getCommentsLayerDurationFrames`, `getHeroSequenceFrames`, `getBacktestoDustFxTrack`, `getBacktestoShakeAbsStartFrame`, …).
+- Then update **`Composition.tsx`** `<Sequence from={…} durationInFrames={…} name="…">` so it still matches (use the exported helpers: `getHeroStartFrame`, `getCommentsLayerDurationFrames`, `getHeroSequenceFrames`, `getBacktestoDustFxTrack`, `getBacktestoImageSwapAbsFrame`, `getEndCardStartFrame`, …).
 - **`timeline.ts`** re-exports the same helpers and legacy names (`BACKTESTO_CURSOR_CLICK_AT_SEC`, `HERO_LOCAL_OFFSET_BACKTESTO_IMAGES`, `getWaveLength` = **`getCompositionDurationFrames`**) so existing imports keep working.
 
 **`Root.tsx`** uses **`DEFAULT_COMPOSITION_FRAMES`** from `Composition.tsx` (= `getCompositionDurationFrames(30)`). If you change fps in `Root`, recompute duration or derive it from `scene-tracks`.
@@ -26,13 +26,13 @@ This repository uses **`AGENTS.md`** (Cursor / agent convention). Instructions f
 
 ### Studio timeline rows
 
-- **`Composition.tsx`** registers named sequences: **Background**, **Comment pills**, **Hero · copy + 2 + Backtesto**, **FX · Backtesto dust / sparkle**, **Audio**.
+- **`Composition.tsx`** registers named sequences: **Background**, **Comment pills**, **Hero · Backtesto**, **FX · Backtesto dust / sparkle**, **Tutorial · floating screen**, **End · URL + Send**, **Audio**.
 - The dust **FX** row uses an invisible **`TimelineMarker`** for timeline visibility. Moving it in the UI **does not** change code; update **`scene-tracks.ts`** / **`Composition.tsx`** to persist.
 - Dust/light **logic** lives in **`BacktestoSparkReveal.tsx`** and uses **`BACKTESTO_CLICK_SEC`** (via **`timeline.ts` / `scene-tracks`**).
 
 ### Must stay aligned
 
-- **`HERO_LOCAL_OFFSET_BACKTESTO`** and **`HERO_WORDS_UNTIL_BACKTESTO_FRAMES`** must match **`OFFSET_BACKTESTO_IMAGES`** (= **`OFFSET_BIG_TWO + DRAMATIC_TWO_FRAMES`**) in **`GoldHeroMessages.tsx`** (short intro + fast dramatic “2”; keep `DRAMATIC_TWO_*_F` in sync with `scene-tracks`).
+- **`HERO_LOCAL_OFFSET_BACKTESTO`** and **`HERO_WORDS_UNTIL_BACKTESTO_FRAMES`** match the hero intro length before Backtesto (currently Backtesto-only: **0**). If you restore word beats in **`GoldHeroMessages.tsx`**, sync with **`OFFSET_BACKTESTO_IMAGES`** there.
 - **`LAST_COMMENT_FROM`** in **`timeline.ts`** must match the last pill’s **`from`** in **`ITALIAN_FEATURE_COMMENTS`** (`CommentPills.tsx`).
 
 ## `BacktestoSparkReveal.tsx`

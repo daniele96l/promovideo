@@ -164,9 +164,14 @@ function TutorialCaptionLayer({
   );
 }
 
-export const TutorialFloatingScreen = () => {
+export const TutorialFloatingScreen = ({
+  sequenceDurationInFrames,
+}: {
+  sequenceDurationInFrames: number;
+}) => {
   const f = useCurrentFrame();
-  const { width, height, durationInFrames, fps } = useVideoConfig();
+  const { width, height, fps } = useVideoConfig();
+  const durationInFrames = sequenceDurationInFrames;
   const { tiltY, tiltX } = getScreenTilt(f, durationInFrames);
 
   const driftXPx = interpolate(

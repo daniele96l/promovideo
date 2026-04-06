@@ -6,12 +6,15 @@ import {
   useVideoConfig,
 } from "remotion";
 import { CommentPillsLayer } from "./CommentPills";
+import { EndUrlLaunch } from "./EndUrlLaunch";
 import { GoldHeroMessages } from "./GoldHeroMessages";
 import { TutorialFloatingScreen } from "./TutorialFloatingScreen";
 import {
   getBacktestoDustFxTrack,
   getCommentsLayerDurationFrames,
   getCompositionDurationFrames,
+  getEndCardDurationFrames,
+  getEndCardStartFrame,
   getHeroSequenceFrames,
   getHeroStartFrame,
   getTutorialDurationFrames,
@@ -25,12 +28,14 @@ function TimelineMarker() {
 
 export const MyComposition = () => {
   const { durationInFrames, fps } = useVideoConfig();
+  const commentDuration = getCommentsLayerDurationFrames(fps);
   const heroFrom = getHeroStartFrame(fps);
   const heroDuration = getHeroSequenceFrames(fps);
-  const commentDuration = getCommentsLayerDurationFrames(fps);
   const dust = getBacktestoDustFxTrack(fps);
   const tutorialFrom = getTutorialStartFrame(fps);
   const tutorialDuration = getTutorialDurationFrames(fps);
+  const endCardFrom = getEndCardStartFrame(fps);
+  const endCardDuration = getEndCardDurationFrames(fps);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#030711", overflow: "hidden" }}>
@@ -71,7 +76,7 @@ export const MyComposition = () => {
         <CommentPillsLayer />
       </Sequence>
 
-      <Sequence from={heroFrom} durationInFrames={heroDuration} name="Hero · copy + 2 + Backtesto">
+      <Sequence from={heroFrom} durationInFrames={heroDuration} name="Hero · Backtesto">
         <GoldHeroMessages />
       </Sequence>
 
@@ -88,12 +93,16 @@ export const MyComposition = () => {
         durationInFrames={tutorialDuration}
         name="Tutorial · floating screen"
       >
-        <TutorialFloatingScreen />
+        <TutorialFloatingScreen sequenceDurationInFrames={tutorialDuration} />
         <Audio src={staticFile("tutorial.mov")} />
       </Sequence>
 
+      <Sequence from={endCardFrom} durationInFrames={endCardDuration} name="End · URL + Send">
+        <EndUrlLaunch />
+      </Sequence>
+
       <Sequence durationInFrames={durationInFrames} name="Audio">
-        <Audio src={staticFile("audio.mp3")} />
+        <Audio src={staticFile("langease.mp3")} />
       </Sequence>
     </AbsoluteFill>
   );

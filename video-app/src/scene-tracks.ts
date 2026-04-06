@@ -7,7 +7,7 @@
  * in the UI, copy the new frame numbers here.
  */
 
-/** Hero / gold copy + dramatic “2” + Backtesto block starts at this second. */
+/** Hero `<Sequence>` (Backtesto transition only) starts at this second. */
 export const HERO_START_SEC = 7;
 
 /**
@@ -16,8 +16,8 @@ export const HERO_START_SEC = 7;
  */
 export const COMMENTS_LAYER_END_SEC = 8.35;
 
-/** Frame count after tutorial before composition end (same at any fps). */
-export const TAIL_GAP_FRAMES = 36;
+/** Legacy: used by `tutorial-captions` bounds vs `tutorial.mov` asset length. */
+export const TAIL_GAP_FRAMES = 0;
 
 /**
  * Source duration of `public/tutorial.mov` (seconds). Update if you replace the file.
@@ -25,17 +25,23 @@ export const TAIL_GAP_FRAMES = 36;
  */
 export const TUTORIAL_SOURCE_DURATION_SEC = 95.51666666666667;
 
-/** Hero-local frame index where Backtesto sequence begins — sync `OFFSET_BACKTESTO_IMAGES` in GoldHeroMessages. */
-export const HERO_LOCAL_OFFSET_BACKTESTO = 190;
-
 /**
- * Sum of word beats + dramatic “2” (frames) until Backtesto — must equal
- * OFFSET_BACKTESTO_IMAGES in GoldHeroMessages (`OFFSET_BIG_TWO` + `DRAMATIC_TWO_FRAMES`).
+ * Duration of `public/langease.mp3` (seconds). Update when replacing the track
+ * (e.g. `afinfo public/langease.mp3` → `estimated duration`).
  */
-export const HERO_WORDS_UNTIL_BACKTESTO_FRAMES = 190;
+export const MUSIC_DURATION_SEC = 33.072;
 
-/** Composition time of cursor click (last Backtesto1 frame ends ~here). Tuned with hero offset + preBurn. */
-export const BACKTESTO_CLICK_SEC = 577 / 30;
+/** Final beat: type URL + Send + “opening site” (seconds). */
+export const END_CARD_SEC = 5;
+
+/** Hero-local frame where Backtesto block begins (0 = hero is Backtesto-only). */
+export const HERO_LOCAL_OFFSET_BACKTESTO = 0;
+
+/** Frames before Backtesto in hero (0 = none). */
+export const HERO_WORDS_UNTIL_BACKTESTO_FRAMES = 0;
+
+/** Composition time of cursor click (last Backtesto1 frame). Tuned with `HERO_START_SEC` + offset + preBurn. */
+export const BACKTESTO_CLICK_SEC = 371 / 30;
 
 export const BACKTESTO_BURN_FRAMES = 78;
 export const BACKTESTO_IMG2_HOLD_FRAMES = 0;
@@ -73,14 +79,25 @@ export function getTutorialStartFrame(fps: number): number {
   return getHeroStartFrame(fps) + getHeroSequenceFrames(fps);
 }
 
-export function getTutorialDurationFrames(fps: number): number {
-  return Math.round(TUTORIAL_SOURCE_DURATION_SEC * fps);
+export function getEndCardDurationFrames(fps: number): number {
+  return Math.round(END_CARD_SEC * fps);
 }
 
+/** Tutorial segment is trimmed so hero + tutorial + end card fits `MUSIC_DURATION_SEC`. */
+export function getTutorialDurationFrames(fps: number): number {
+  const total = getCompositionDurationFrames(fps);
+  const start = getTutorialStartFrame(fps);
+  const endCard = getEndCardDurationFrames(fps);
+  return Math.max(1, total - start - endCard);
+}
+
+/** Total composition = music length (video ends when the track ends). */
 export function getCompositionDurationFrames(fps: number): number {
-  return (
-    getTutorialStartFrame(fps) + getTutorialDurationFrames(fps) + TAIL_GAP_FRAMES
-  );
+  return Math.round(MUSIC_DURATION_SEC * fps);
+}
+
+export function getEndCardStartFrame(fps: number): number {
+  return getCompositionDurationFrames(fps) - getEndCardDurationFrames(fps);
 }
 
 export function getBacktestoBlockStartAbsFrame(fps: number): number {
@@ -111,15 +128,22 @@ export function getBacktestoDustFxTrack(fps: number): {
 export const SCENE_TRACKS_SEC = [
   { id: "background", name: "Background & ambience", startSec: 0, endSec: "compositionEnd" as const },
   { id: "comments", name: "Comment pills", startSec: 0, endSec: COMMENTS_LAYER_END_SEC },
-  { id: "hero", name: "Hero · copy + 2 + Backtesto", startSec: HERO_START_SEC, endSec: "heroEnd" as const },
-  { id: "backtestoBlock", name: "Backtesto · block (nested in hero)", startSec: "hero+190f" as const, note: "hero-local offset 190" },
+  { id: "hero", name: "Hero · Backtesto", startSec: HERO_START_SEC, endSec: "heroEnd" as const },
+  { id: "backtestoBlock", name: "Backtesto · block (nested in hero)", startSec: "hero+0f" as const, note: "hero-local offset 0" },
   { id: "backtestoSwap", name: "FX · Backtesto2 swap + dust", startSec: BACKTESTO_CLICK_SEC, note: "~aligns with preBurn end" },
   {
     id: "tutorial",
     name: "Tutorial · floating screen",
     startSec: "afterHero" as const,
-    endSec: "beforeTailGap" as const,
-    note: "tutorial.mov + captions; see getTutorialStartFrame",
+    endSec: "beforeEndCard" as const,
+    note: "trimmed to fit music − end card; see getTutorialDurationFrames",
   },
-  { id: "audio", name: "Audio", startSec: 0, endSec: "compositionEnd" as const },
+  {
+    id: "endCard",
+    name: "End · URL + Send",
+    startSec: "musicDuration − END_CARD_SEC" as const,
+    endSec: "compositionEnd" as const,
+    note: "see getEndCardStartFrame / EndUrlLaunch",
+  },
+  { id: "audio", name: "Audio (langease.mp3)", startSec: 0, endSec: "compositionEnd" as const },
 ] as const;
