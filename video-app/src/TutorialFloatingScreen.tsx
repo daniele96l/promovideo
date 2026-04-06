@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   AbsoluteFill,
   Easing,
@@ -11,6 +11,53 @@ import {
 import { TUTORIAL_CAPTIONS } from "./tutorial-captions";
 
 const quint = Easing.out(Easing.poly(5));
+
+const boldSpanStyle: CSSProperties = {
+  fontWeight: 950,
+  color: "rgba(255, 255, 255, 0.99)",
+  textShadow:
+    "0 0 28px rgba(59, 130, 246, 0.45), 0 2px 20px rgba(0,0,0,0.92), 0 0 40px rgba(56, 189, 248, 0.25)",
+};
+
+/** Renders `<b>…</b>` and optional `<br>` / `<br/>` in caption strings (not raw HTML). */
+function renderCaptionRichText(text: string): ReactNode {
+  const lines = text.split(/<br\s*\/?>/i);
+  return lines.map((line, lineIdx) => (
+    <span key={lineIdx}>
+      {lineIdx > 0 ? <br /> : null}
+      <CaptionLineSegments line={line} lineKey={lineIdx} />
+    </span>
+  ));
+}
+
+function CaptionLineSegments({ line, lineKey }: { line: string; lineKey: number }) {
+  const out: ReactNode[] = [];
+  let rest = line;
+  let i = 0;
+  while (rest.length > 0) {
+    const open = rest.indexOf("<b>");
+    if (open === -1) {
+      out.push(<span key={`${lineKey}-${i++}`}>{rest}</span>);
+      break;
+    }
+    if (open > 0) {
+      out.push(<span key={`${lineKey}-${i++}`}>{rest.slice(0, open)}</span>);
+    }
+    const close = rest.indexOf("</b>", open + 3);
+    if (close === -1) {
+      out.push(<span key={`${lineKey}-${i++}`}>{rest.slice(open)}</span>);
+      break;
+    }
+    const inner = rest.slice(open + 3, close);
+    out.push(
+      <span key={`${lineKey}-${i++}`} style={boldSpanStyle}>
+        {inner}
+      </span>,
+    );
+    rest = rest.slice(close + 4);
+  }
+  return <>{out}</>;
+}
 const TUTORIAL_ASPECT = 1866 / 972;
 
 function getScreenTilt(
@@ -142,7 +189,7 @@ function TutorialCaptionLayer({
                 transform: `translateX(${slideLeft}px)`,
               }}
             >
-              {c.text}
+              {renderCaptionRichText(c.text)}
             </div>
           );
         }
@@ -156,7 +203,7 @@ function TutorialCaptionLayer({
               transform: `translateX(${slideRight}px)`,
             }}
           >
-            {c.text}
+            {renderCaptionRichText(c.text)}
           </div>
         );
       })}
