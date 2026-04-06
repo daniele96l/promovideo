@@ -13,10 +13,10 @@ export type TutorialCaption = {
 const BEAT_SEC = 1.48;
 
 const UI_BEATS: string[] = [
-  "Backtesta il tuo portafoglio",
+  "Attiva la Dark Mode",
+  "Backtesta il tuo portafoglio dal 1970",
   "Chatta con Alpha AI migliorata",
-  "Database con 10k assets",
-  "Performance migliorata",
+  "Database con ETF, Bond e Azioni",
   "Controlla la tua <b>Allocazione geografica</b>",
   "Fai una <b>Simulazione Monte Carlo</b>",
   "Guarda il tuo <b>Dani Score</b>",
